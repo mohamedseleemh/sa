@@ -1,33 +1,49 @@
 {
-  "version": 2,
+  "version": 3,
   "name": "kyctrust-platform",
-  "framework": "vite",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
+  "builds": [
+    {
+      "src": "vite.config.ts",
+      "use": "@vercel/vite"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/(.*)",      "dest": "/api/$1" },
     { "handle": "filesystem" },
-    { "src": "/admin/(.*)", "dest": "/index.html" },
-    { "src": "(.*)", "dest": "/index.html" }
+    { "src": "/admin/(.*)",    "dest": "/index.html" },
+    { "src": "/(.*)",          "dest": "/index.html" }
   ],
   "headers": [
     {
       "source": "/.*",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        { "key": "X-Frame-Options",        "value": "DENY" },
+        { "key": "X-XSS-Protection",       "value": "1; mode=block" },
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",     "value": "camera=(), microphone=(), geolocation=()" }
       ]
     },
-    { "source": "*.html", "headers": [ { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" } ] },
-    { "source": "/static/(.*)", "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ] },
-    { "source": "*.js", "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ] },
-    { "source": "*.css", "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ] }
+    {
+      "source": "/(.*)\\.html",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" } ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ]
+    },
+    {
+      "source": "/(.*)\\.js",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ]
+    },
+    {
+      "source": "/(.*)\\.css",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" } ]
+    }
   ],
   "env": {
     "NODE_ENV": "production"
