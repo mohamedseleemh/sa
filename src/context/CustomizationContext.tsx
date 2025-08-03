@@ -28,7 +28,7 @@ export interface GlobalSettings {
 
 export interface PageElement {
   id: string;
-  type: 'hero' | 'services' | 'features' | 'testimonials' | 'stats' | 'cta' | 'text' | 'image' | 'video' | 'form';
+  type: 'hero' | 'services' | 'features' | 'testimonials' | 'stats' | 'cta' | 'text' | 'image' | 'video' | 'form' | 'header' | 'footer';
   position: { x: number; y: number };
   size: { width: number; height: number };
   content: any;
@@ -100,9 +100,50 @@ const defaultCustomization: CustomizationData = {
     borderRadius: '1rem',
     spacing: '1.5rem'
   },
-  pageElements: [],
+  pageElements: [
+    {
+      id: 'default-header',
+      type: 'header',
+      content: {
+        logoUrl: '/logo.png',
+        links: [
+          { text: 'الرئيسية', href: '#' },
+          { text: 'خدماتنا', href: '#' },
+          { text: 'من نحن', href: '#' },
+          { text: 'اتصل بنا', href: '#' },
+        ],
+      },
+      styles: {
+        backgroundColor: '#ffffff',
+        textColor: '#000000',
+      },
+      position: { x: 0, y: 0 },
+      size: { width: 1200, height: 80 },
+      visible: true,
+      order: 0,
+    },
+    {
+      id: 'default-footer',
+      type: 'footer',
+      content: {
+        text: '© 2024 KYCtrust. جميع الحقوق محفوظة.',
+        links: [
+          { text: 'سياسة الخصوصية', href: '#' },
+          { text: 'شروط الاستخدام', href: '#' },
+        ],
+      },
+      styles: {
+        backgroundColor: '#1F2937',
+        textColor: '#ffffff',
+      },
+      position: { x: 0, y: 1000 },
+      size: { width: 1200, height: 100 },
+      visible: true,
+      order: 1000,
+    },
+  ],
   pageLayout: {
-    sections: ['hero', 'services', 'features', 'testimonials', 'faq'],
+    sections: ['header', 'hero', 'services', 'features', 'testimonials', 'faq', 'footer'],
     theme: 'modern',
     customCSS: ''
   }

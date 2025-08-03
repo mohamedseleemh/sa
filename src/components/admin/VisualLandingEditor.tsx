@@ -16,6 +16,7 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import toast from 'react-hot-toast';
 import { landingPageService, type LandingPageSection } from '../../services/landingPageService';
+import ElementPropertiesEditor from './VisualEditor/ElementPropertiesEditor';
 
 interface ElementStyle {
   backgroundColor?: string;
@@ -45,7 +46,7 @@ interface ElementStyle {
 
 interface PageElement {
   id: string;
-  type: 'text' | 'image' | 'button' | 'container' | 'header' | 'paragraph' | 'icon' | 'video' | 'form';
+  type: 'text' | 'image' | 'button' | 'container' | 'header' | 'footer' | 'paragraph' | 'icon' | 'video' | 'form';
   content: string;
   styles: ElementStyle;
   position: { x: number; y: number };
@@ -78,6 +79,8 @@ const VisualLandingEditor: React.FC = () => {
   const [history, setHistory] = useState<PageElement[][]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [clipboard, setClipboard] = useState<PageElement[]>([]);
+  const [isSaveAsModalOpen, setIsSaveAsModalOpen] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
   const [globalStyles, setGlobalStyles] = useState({
     primaryColor: '#3B82F6',
     secondaryColor: '#8B5CF6',
@@ -396,6 +399,36 @@ const VisualLandingEditor: React.FC = () => {
     } catch (error) {
       console.error('Error saving page:', error);
       toast.error('فشل في حفظ الصفحة');
+    }
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!newTemplateName.trim()) {
+      toast.error('يرجى إدخال اسم للقالب');
+      return;
+    }
+    try {
+      const pageData = {
+        elements,
+        styles: globalStyles,
+        settings: {
+          canvasSize,
+          previewMode
+        }
+      };
+      await landingPageService.savePageTemplate({
+        name: newTemplateName,
+        page_type: 'landing',
+        template_data: [pageData] as any,
+        theme_config: globalStyles,
+        active: true,
+      }, false); // is_default = false
+      toast.success(`تم حفظ القالب "${newTemplateName}" بنجاح`);
+      setIsSaveAsModalOpen(false);
+      setNewTemplateName('');
+    } catch (error) {
+      toast.error('فشل في حفظ القالب');
+      console.error('Error saving as template:', error);
     }
   };
 
@@ -751,11 +784,48 @@ const VisualLandingEditor: React.FC = () => {
                   className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Save className="h-4 w-4 ml-2" />
-                  حفظ
+                  حفظ التغييرات
+                </button>
+                <button
+                  onClick={() => setIsSaveAsModalOpen(true)}
+                  className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <Plus className="h-4 w-4 ml-2" />
+                  حفظ كقالب
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Save As Template Modal */}
+          {isSaveAsModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+                <h3 className="text-lg font-semibold mb-4">حفظ القالب الجديد</h3>
+                <input
+                  type="text"
+                  value={newTemplateName}
+                  onChange={(e) => setNewTemplateName(e.target.value)}
+                  placeholder="أدخل اسم القالب"
+                  className="w-full px-3 py-2 border rounded-lg mb-4"
+                />
+                <div className="flex justify-end space-x-2 space-x-reverse">
+                  <button
+                    onClick={() => setIsSaveAsModalOpen(false)}
+                    className="px-4 py-2 bg-gray-200 rounded-lg"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    onClick={handleSaveAsTemplate}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                  >
+                    حفظ
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Canvas */}
           <div className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-auto p-8">
@@ -799,30 +869,12 @@ const VisualLandingEditor: React.FC = () => {
         </div>
 
         {/* Right Sidebar - Properties */}
-        {selectedElement && (
-          <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              خصائص العنصر
-            </h3>
-            
-            {/* Element properties form would go here */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  النص
-                </label>
-                <input
-                  type="text"
-                  value={elements.find(el => el.id === selectedElement)?.content || ''}
-                  onChange={(e) => updateElement(selectedElement, { content: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-              
-              {/* More property controls would be added here */}
-            </div>
-          </div>
-        )}
+        <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+          <ElementPropertiesEditor
+            selectedElement={elements.find(el => el.id === selectedElement) || null}
+            onUpdateElement={updateElement}
+          />
+        </div>
       </div>
     </DndProvider>
   );

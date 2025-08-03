@@ -4,6 +4,8 @@ import {
   CreditCard, Users, Star, Quote, BarChart, 
   Type, Image as ImageIcon, Video, Mail 
 } from 'lucide-react';
+import HeaderRenderer from '../../rendering/HeaderRenderer';
+import FooterRenderer from '../../rendering/FooterRenderer';
 
 interface ElementRendererProps {
   element: PageElement;
@@ -297,6 +299,10 @@ const ElementRenderer: React.FC<ElementRendererProps> = ({ element, theme, isEdi
       return renderForm();
     case 'cta':
       return renderCTA();
+    case 'header':
+      return <HeaderRenderer element={element} />;
+    case 'footer':
+      return <FooterRenderer element={element} />;
     default:
       return (
         <div className="w-full h-full flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300">
