@@ -185,6 +185,26 @@ export class SupabaseDatabaseService implements DatabaseService {
   }
 
   // Orders
+  async getAdminProfile(): Promise<any> {
+    const { data, error } = await supabase
+      .from('admin_profiles')
+      .select('*')
+      .single();
+    if (error) throw new Error(`Failed to fetch admin profile: ${error.message}`);
+    return data;
+  }
+
+  async updateAdminProfile(userId: string, updates: any): Promise<any> {
+    const { data, error } = await supabase
+      .from('admin_profiles')
+      .update(updates)
+      .eq('user_id', userId)
+      .select()
+      .single();
+    if (error) throw new Error(`Failed to update admin profile: ${error.message}`);
+    return data;
+  }
+
   async getOrders(): Promise<Order[]> {
     const { data, error } = await supabase
       .from('orders')

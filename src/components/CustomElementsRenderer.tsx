@@ -41,7 +41,7 @@ const CustomElementsRenderer: React.FC = () => {
 
   return (
     <div className="custom-elements-container">
-      {sortedElements.map((element, index) => (
+      {sortedElements.map((element) => (
         <section
           key={element.id}
           className={`custom-element-section ${element.type}-section`}

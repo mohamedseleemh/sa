@@ -26,6 +26,48 @@ export const BackupManager: React.FC = () => {
     customizations: true
   });
 
+  const createAutomaticBackup = React.useCallback(async () => {
+    try {
+      const backupData = {
+        services,
+        orders,
+        settings: {
+          theme: localStorage.getItem('theme'),
+          language: localStorage.getItem('language'),
+          customization: localStorage.getItem('kyc-customization')
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      const autoBackup: BackupData = {
+        id: `auto-${Date.now()}`,
+        name: `نسخة تلقائية - ${new Date().toLocaleDateString('ar-SA')}`,
+        date: new Date().toISOString(),
+        size: `${(JSON.stringify(backupData).length / 1024).toFixed(1)} KB`,
+        type: 'automatic',
+        status: 'completed',
+        includes: ['services', 'orders', 'settings']
+      };
+
+      localStorage.setItem(`kyc-backup-${autoBackup.id}`, JSON.stringify(backupData));
+
+      // Keep only last 10 automatic backups
+      const updatedBackups = [autoBackup, ...backups];
+      const filteredBackups = updatedBackups.filter((backup, index) => {
+        if (backup.type === 'automatic' && index > 9) {
+          localStorage.removeItem(`kyc-backup-${backup.id}`);
+          return false;
+        }
+        return true;
+      });
+
+      setBackups(filteredBackups);
+      localStorage.setItem('kyc-backups', JSON.stringify(filteredBackups));
+    } catch (error) {
+      console.error('خطأ في إنشاء النسخة التلقائية:', error);
+    }
+  }, [backups, orders, services]);
+
   useEffect(() => {
     loadBackups();
     // Set up automatic backup reminder
@@ -34,7 +76,7 @@ export const BackupManager: React.FC = () => {
     }, 24 * 60 * 60 * 1000); // Daily
 
     return () => clearInterval(interval);
-  }, []);
+  }, [createAutomaticBackup]);
 
   const loadBackups = () => {
     const savedBackups = localStorage.getItem('kyc-backups');
@@ -76,7 +118,7 @@ export const BackupManager: React.FC = () => {
     setIsCreatingBackup(true);
 
     try {
-      const backupData: any = {};
+      const backupData: Record<string, unknown> = {};
       const includes: string[] = [];
 
       if (includeSettings.services && services) {

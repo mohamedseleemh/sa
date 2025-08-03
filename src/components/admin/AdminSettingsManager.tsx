@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   User, Lock, Shield, Bell, Settings, Eye, EyeOff, 
-  Camera, Save, RefreshCw, Download, Upload, History,
-  Globe, Monitor, Smartphone, Palette, Code, Database,
-  AlertTriangle, Check, X, Clock, Key, Fingerprint,
-  Mail, Phone, MapPin, Calendar, UserCheck, Award
+  Camera, Save, History,
+  AlertTriangle, Check, X, Clock, Key,
+  UserCheck, Award
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { 
@@ -13,6 +12,7 @@ import {
   validatePasswordStrength,
   generateSecurePassword 
 } from '../../utils/auth';
+import * as databaseService from '../../services/database';
 
 interface AdminProfile {
   // Personal Information
@@ -85,6 +85,18 @@ export const AdminSettingsManager: React.FC = () => {
   const [passwordStrength, setPasswordStrength] = useState<any>(null);
 
   useEffect(() => {
+    const loadAdminProfile = async () => {
+      setIsLoading(true);
+      try {
+        const adminProfile = await databaseService.getAdminProfile();
+        setProfile(adminProfile);
+      } catch (error) {
+        console.error('خطأ في تحميل ملف المدير:', error);
+        toast.error('فشل في تحميل بيانات المدير');
+      } finally {
+        setIsLoading(false);
+      }
+    };
     loadAdminProfile();
   }, []);
 
@@ -97,90 +109,20 @@ export const AdminSettingsManager: React.FC = () => {
     }
   }, [newPassword]);
 
-  const loadAdminProfile = async () => {
-    try {
-      const stored = localStorage.getItem('kyc-admin-profile');
-      if (stored) {
-        setProfile(JSON.parse(stored));
-      } else {
-        // Initialize with default profile
-        const defaultProfile: AdminProfile = {
-          username: 'admin',
-          displayName: 'مدير النظام',
-          email: 'admin@kyctrust.com',
-          phone: '+966501234567',
-          avatar: '',
-          bio: 'مدير النظام الرئيسي لمنصة KYCtrust',
-          location: 'الرياض، السعودية',
-          timezone: 'Asia/Riyadh',
-          
-          twoFactorEnabled: false,
-          loginNotifications: true,
-          sessionTimeout: 1440, // 24 hours
-          allowedIPs: [],
-          lastPasswordChange: new Date().toISOString(),
-          
-          language: 'ar',
-          theme: 'auto',
-          dashboardLayout: 'grid',
-          itemsPerPage: 20,
-          enableSounds: true,
-          enableAnimations: true,
-          
-          emailNotifications: {
-            newOrders: true,
-            systemAlerts: true,
-            securityWarnings: true,
-            maintenanceUpdates: false,
-            weeklyReports: true
-          },
-          
-          lastLogin: new Date().toISOString(),
-          loginCount: 1,
-          activityLog: [{
-            action: 'تسجيل دخول',
-            timestamp: new Date().toISOString(),
-            ip: '127.0.0.1',
-            userAgent: navigator.userAgent
-          }],
-          
-          role: 'super_admin',
-          permissions: [
-            'manage_users', 'manage_settings', 'manage_orders',
-            'manage_services', 'view_analytics', 'system_admin'
-          ],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        
-        setProfile(defaultProfile);
-        localStorage.setItem('kyc-admin-profile', JSON.stringify(defaultProfile));
-      }
-    } catch (error) {
-      console.error('خطأ في تحميل ملف المدير:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const saveProfile = async () => {
     if (!profile) return;
     
     setIsSaving(true);
     try {
-      const updatedProfile = {
-        ...profile,
-        updatedAt: new Date().toISOString()
-      };
-      
-      localStorage.setItem('kyc-admin-profile', JSON.stringify(updatedProfile));
-      setProfile(updatedProfile);
+      const { ...updates } = profile;
+      await databaseService.updateAdminProfile(updates.user_id, updates);
       
       setSaveMessage('تم حفظ الملف الشخصي بنجاح');
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
       console.error('خطأ في حفظ الملف الشخصي:', error);
       setSaveMessage('حدث خطأ أثناء حفظ الملف الشخصي');
+      toast.error('فشل في حفظ الملف الشخصي');
     } finally {
       setIsSaving(false);
     }
@@ -248,17 +190,17 @@ export const AdminSettingsManager: React.FC = () => {
     toast.success('تم إنشاء كلمة مرور قوية تلقائياً');
   };
 
-  const updateProfile = (field: string, value: any) => {
+  const updateProfile = (field: string, value: string | number | boolean) => {
     if (!profile) return;
     setProfile({ ...profile, [field]: value });
   };
 
-  const updateNestedProfile = (section: string, field: string, value: any) => {
+  const updateNestedProfile = (section: string, field: string, value: boolean) => {
     if (!profile) return;
     setProfile({
       ...profile,
       [section]: {
-        ...(profile as any)[section],
+        ...profile[section as keyof AdminProfile] as object,
         [field]: value
       }
     });
@@ -589,7 +531,7 @@ export const AdminSettingsManager: React.FC = () => {
                           />
                         </div>
                         <div className="mt-2 space-y-1">
-                          {passwordStrength.requirements.map((req: any, index: number) => (
+                          {passwordStrength.requirements.map((req: { met: boolean; text: string }, index: number) => (
                             <div key={index} className="flex items-center text-xs">
                               {req.met ? (
                                 <Check className="h-3 w-3 text-green-500 mr-1" />
@@ -727,7 +669,7 @@ export const AdminSettingsManager: React.FC = () => {
                   </label>
                   <select
                     value={profile.theme}
-                    onChange={(e) => updateProfile('theme', e.target.value)}
+                    onChange={(e) => updateProfile('theme', e.target.value as 'light' | 'dark' | 'auto')}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
                              bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
@@ -743,7 +685,7 @@ export const AdminSettingsManager: React.FC = () => {
                   </label>
                   <select
                     value={profile.dashboardLayout}
-                    onChange={(e) => updateProfile('dashboardLayout', e.target.value)}
+                    onChange={(e) => updateProfile('dashboardLayout', e.target.value as 'grid' | 'list' | 'compact')}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
                              bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >

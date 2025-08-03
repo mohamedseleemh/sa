@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   Activity, Users, DollarSign, TrendingUp, BarChart3, PieChart,
-  Calendar, Clock, Globe, Zap, Shield, Star, Award, Target,
+  Zap, Shield, Star, Award,
   ArrowUpRight, ArrowDownRight, ChevronRight, Download,
-  Settings, RefreshCw, Filter, Search, Bell, MessageCircle,
-  FileText, Database, Server, Cpu, HardDrive, Wifi
+  Settings, RefreshCw, Bell,
+  FileText, Database, Server
 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import CounterAnimation from '../animations/CounterAnimation';
@@ -26,9 +26,8 @@ interface ChartData {
 }
 
 const AdvancedDashboard: React.FC = () => {
-  const { services, orders, loading } = useData();
+  const { orders } = useData();
   const [timeRange, setTimeRange] = useState('7d');
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
   const [realTimeData, setRealTimeData] = useState({
     activeUsers: 127,
     serverLoad: 23,

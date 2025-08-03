@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Shield, CheckCircle, CreditCard, MessageCircle, Star, ArrowRight, 
-  Clock, Users, Award, Zap, Globe, TrendingUp, Lock, Heart, 
-  Sparkles, Phone, Mail, MapPin, Menu, X, Rocket, Target,
-  ChevronDown, CheckSquare, Eye, Instagram, Twitter, Linkedin, Youtube
+  Clock, Users, Award, Zap, Globe, Heart,
+  Sparkles, Phone, Mail, Menu, X, Rocket, Target,
+  ChevronDown, CheckSquare, Eye
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { useTranslation } from '../utils/translations';
 import OrderModal from './modals/OrderModal';
-import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorMessage from './ui/ErrorMessage';
 import ServicesShowcase from './modals/ServicesShowcase';
 import ThemeToggle from './ui/ThemeToggle';
@@ -22,10 +21,10 @@ import CustomElementsRenderer from './CustomElementsRenderer';
 
 const LandingPage: React.FC = () => {
   // Hooks
-  const { services, paymentMethods, siteSettings, loading, error, refreshData } = useData();
+  const { services, paymentMethods, siteSettings, error, refreshData } = useData();
   const { theme, language } = useTheme();
   const { customization } = useCustomization();
-  const { t } = useTranslation(language);
+  useTranslation(language);
 
   // State
   const [selectedService, setSelectedService] = useState<{name: string, price: string} | null>(null);
@@ -223,7 +222,7 @@ const LandingPage: React.FC = () => {
 
   // Listen for page published events
   useEffect(() => {
-    const handlePagePublished = (event: any) => {
+    const handlePagePublished = () => {
       // Page published, refreshing data
       refreshData();
       // Optionally show a toast
@@ -620,7 +619,7 @@ const LandingPage: React.FC = () => {
 
           {/* Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredServices.length > 0 ? featuredServices.map((service, index) => (
+            {featuredServices.length > 0 ? featuredServices.map((service) => (
               <div
                 key={service.id}
                 className={`group relative p-8 rounded-3xl border transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer ${
@@ -1124,7 +1123,7 @@ const LandingPage: React.FC = () => {
               </p>
               
               <div className="flex space-x-reverse space-x-4">
-                {activePaymentMethods.slice(0, 4).map((method, index) => (
+                {activePaymentMethods.slice(0, 4).map((method) => (
                   <div
                     key={method.id}
                     className={`w-12 h-8 rounded flex items-center justify-center text-xs font-bold ${

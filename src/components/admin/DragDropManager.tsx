@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   GripVertical, Plus, Edit3, Trash2, Eye, EyeOff, Copy,
-  Save, RefreshCw, Download, Upload, Settings, Move,
-  ArrowUp, ArrowDown, MoreVertical, Search, Filter,
-  CheckCircle, XCircle, AlertCircle, Star, DollarSign
+  RefreshCw, Download, Settings, Move,
+  Search,
+  CheckCircle, XCircle, Star, DollarSign
 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import toast from 'react-hot-toast';
@@ -42,16 +42,9 @@ export const DragDropManager: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'active' | 'inactive' | 'featured'>('all');
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<DragDropItem>>({});
-  const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  const dragRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    initializeCategories();
-  }, [services]);
-
-  const initializeCategories = () => {
+  const initializeCategories = React.useCallback(() => {
     // Convert services to drag and drop items
     const serviceItems: DragDropItem[] = services.map((service, index) => ({
       id: service.id,
@@ -162,8 +155,8 @@ export const DragDropManager: React.FC = () => {
     });
     
     // Update orders
-    targetCategory.items.forEach((item, index) => {
-      item.order = index;
+    targetCategory.items.forEach((item, idx) => {
+      item.order = idx;
     });
     
     setCategories(newCategories);

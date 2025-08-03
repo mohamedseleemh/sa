@@ -20,6 +20,7 @@
 -- ============================================
 
 INSERT INTO users (id, email, password_hash, role, first_name, last_name, phone, is_active, is_verified) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'admin@kyctrust.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LfWppDaGq0MpbKOFK', 'admin', 'Admin', 'User', '+966500000000', true, true),
 ('550e8400-e29b-41d4-a716-446655440001', 'customer1@example.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LfWppDaGq0MpbKOFK', 'customer', 'أحمد', 'المحمد', '+966501111111', true, true),
 ('550e8400-e29b-41d4-a716-446655440002', 'customer2@example.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LfWppDaGq0MpbKOFK', 'customer', 'فاطمة', 'الأحمد', '+966502222222', true, true),
 ('550e8400-e29b-41d4-a716-446655440003', 'operator@kyctrust.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LfWppDaGq0MpbKOFK', 'operator', 'سارة', 'العتيبي', '+966503333333', true, true),
@@ -155,6 +156,14 @@ INSERT INTO activity_logs (user_id, action, resource_type, resource_id, old_valu
 ('550e8400-e29b-41d4-a716-446655440001', 'profile_updated', 'user', '550e8400-e29b-41d4-a716-446655440001', '{"phone": "+966501111110"}', '{"phone": "+966501111111"}', '192.168.1.105', NULL, NOW() - INTERVAL '3 days'),
 ('550e8400-e29b-41d4-a716-446655440003', 'payment_method_added', 'payment_method', '850e8400-e29b-41d4-a716-446655440006', NULL, '{"name": "فيزا/ماستركارد", "type": "card"}', '192.168.1.200', NULL, NOW() - INTERVAL '1 week')
 ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- SAMPLE ADMIN PROFILES
+-- ============================================
+
+INSERT INTO admin_profiles (user_id, display_name, avatar_url, bio, location, timezone, two_factor_enabled, login_notifications, session_timeout_minutes, language, theme, dashboard_layout, items_per_page) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'Admin User', '', 'This is the main administrator account.', 'Riyadh, Saudi Arabia', 'Asia/Riyadh', false, true, 1440, 'ar', 'auto', 'grid', 20)
+ON CONFLICT (user_id) DO NOTHING;
 
 -- ============================================
 -- UPDATE STATISTICS

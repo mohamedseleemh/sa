@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
-  Shield, CheckCircle, CreditCard, MessageCircle, Star, ArrowRight, 
-  Clock, Users, Award, Zap, Globe, TrendingUp, Lock, Heart, 
-  Sparkles, Phone, Mail, MapPin, Menu, X, Rocket, Target,
-  ChevronDown, CheckSquare, Eye, Instagram, Twitter, Linkedin, Youtube
+  Shield, ArrowRight,
+  Clock, Zap, Menu, X
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
@@ -16,7 +14,6 @@ import ErrorMessage from './ui/ErrorMessage';
 import ServicesShowcase from './modals/ServicesShowcase';
 import ThemeToggle from './ui/ThemeToggle';
 import LanguageToggle from './ui/LanguageToggle';
-import CounterAnimation from './animations/CounterAnimation';
 import SEOOptimizer from './optimization/SEOOptimizer';
 import PerformanceTracker from './optimization/PerformanceTracker';
 import CustomElementsRenderer from './CustomElementsRenderer';
@@ -24,9 +21,9 @@ import CustomElementsRenderer from './CustomElementsRenderer';
 const LandingPageWithDatabase: React.FC = () => {
   // Hooks
   const { services, paymentMethods, siteSettings, loading, error, refreshData } = useData();
-  const { theme, language } = useTheme();
+  const { language } = useTheme();
   const { customization } = useCustomization();
-  const { t } = useTranslation(language);
+  useTranslation(language);
 
   // State
   const [selectedService, setSelectedService] = useState<{name: string, price: string} | null>(null);
@@ -34,7 +31,6 @@ const LandingPageWithDatabase: React.FC = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
   const [landingSections, setLandingSections] = useState<LandingPageSection[]>([]);
   const [sectionsLoading, setSectionsLoading] = useState(true);
 
@@ -81,12 +77,12 @@ const LandingPageWithDatabase: React.FC = () => {
   }, []);
 
   // Service selection handlers
-  const handleServiceSelect = useCallback((service: any) => {
+  const handleServiceSelect = useCallback((service: { name: string; price: { toString: () => string; }; }) => {
     setSelectedService({ name: service.name, price: service.price.toString() });
     setIsModalOpen(true);
   }, []);
 
-  const handleWhatsAppContact = useCallback((service?: any) => {
+  const handleWhatsAppContact = useCallback((service?: { name: string; }) => {
     const message = service 
       ? `مرحباً، أود الاستفسار عن خدمة: ${service.name}`
       : 'مرحباً، أود الاستفسار عن خدماتكم';
@@ -173,7 +169,7 @@ const LandingPageWithDatabase: React.FC = () => {
               )}
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredServices.map((service, index) => (
+                {featuredServices.map((service) => (
                   <div
                     key={service.id}
                     className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100 dark:border-gray-700"

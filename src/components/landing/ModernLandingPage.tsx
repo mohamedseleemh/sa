@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React from 'react';
 import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
-import { useTranslation } from '../../utils/translations';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorMessage from '../ui/ErrorMessage';
 import SEOOptimizer from '../optimization/SEOOptimizer';

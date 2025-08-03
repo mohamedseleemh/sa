@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, Users, ShoppingCart, DollarSign, Eye, Clock, Globe } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TrendingUp, ShoppingCart, DollarSign, Eye, Globe } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 
 interface AnalyticsData {
@@ -19,11 +19,7 @@ export const AnalyticsPanel: React.FC = () => {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
-  useEffect(() => {
-    calculateAnalytics();
-  }, [orders, services, timeRange]);
-
-  const calculateAnalytics = () => {
+  const calculateAnalytics = useCallback(() => {
     if (!orders || orders.length === 0) {
       setAnalytics({
         visits: 1250,
@@ -72,7 +68,11 @@ export const AnalyticsPanel: React.FC = () => {
       visitorsByCountry: generateDummyCountryStats(),
       deviceStats: generateDummyDeviceStats()
     });
-  };
+  }, [orders, timeRange]);
+
+  useEffect(() => {
+    calculateAnalytics();
+  }, [calculateAnalytics]);
 
   const getTimeRangeMs = (range: string) => {
     switch (range) {
@@ -84,7 +84,7 @@ export const AnalyticsPanel: React.FC = () => {
     }
   };
 
-  const generateMonthlyStats = (orders: any[]) => {
+  const generateMonthlyStats = (orders: { createdAt: string | number | Date; amount: number; }[]) => {
     const monthlyData: Record<string, { orders: number; revenue: number }> = {};
     
     orders.forEach(order => {
