@@ -23,6 +23,7 @@ import { AnalyticsPanel } from './AnalyticsPanel';
 import UsersManager from './UsersManager';
 import ReportsManager from './ReportsManager';
 import { BackupManager } from './BackupManager';
+import { TemplatesManager } from './TemplatesManager';
 import { useData } from '../../context/DataContext';
 
 type TabType = 
@@ -379,45 +380,7 @@ const EnhancedAdminPanel: React.FC = () => {
           </div>
         );
       case 'templates':
-        return (
-          <div className="p-8">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-              مكتبة القوالب
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { name: 'قالب الأعمال الحديث', category: 'أعمال', preview: '/templates/business-modern.jpg' },
-                { name: 'قالب المحفظة الإبداعية', category: 'محفظة', preview: '/templates/portfolio-creative.jpg' },
-                { name: 'قالب التجارة الإلكترونية', category: 'تجارة', preview: '/templates/ecommerce-modern.jpg' },
-                { name: 'قالب الخدمات المهنية', category: 'خدمات', preview: '/templates/services-professional.jpg' },
-                { name: 'قالب التطبيقات', category: 'تكنولوجيا', preview: '/templates/app-landing.jpg' },
-                { name: 'قالب الطعام والمطاعم', category: 'طعام', preview: '/templates/restaurant-modern.jpg' }
-              ].map((template, index) => (
-                <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                  <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500"></div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        {template.name}
-                      </h3>
-                      <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
-                        {template.category}
-                      </span>
-                    </div>
-                    <div className="flex space-x-2 space-x-reverse">
-                      <button className="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                        استخدام
-                      </button>
-                      <button className="py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return <TemplatesManager />;
       default:
         return <AdvancedDashboard />;
     }

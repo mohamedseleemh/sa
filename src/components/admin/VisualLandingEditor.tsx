@@ -376,14 +376,21 @@ const VisualLandingEditor: React.FC = () => {
         }
       };
 
-      await landingPageService.savePageTemplate({
-        name: 'صفحة الهبوط',
-        page_type: 'landing',
-        template_data: [pageData] as any,
-        theme_config: globalStyles,
-        is_default: true,
-        active: true
-      });
+      const activeTemplate = await landingPageService.getActiveLandingPageTemplate();
+      if (activeTemplate) {
+        await landingPageService.updatePageTemplate(activeTemplate.id, {
+          template_data: [pageData] as any,
+          theme_config: globalStyles,
+        });
+      } else {
+        await landingPageService.savePageTemplate({
+          name: 'صفحة الهبوط الافتراضية',
+          page_type: 'landing',
+          template_data: [pageData] as any,
+          theme_config: globalStyles,
+          active: true,
+        }, true); // Make it default
+      }
 
       toast.success('تم حفظ الصفحة بنجاح');
     } catch (error) {

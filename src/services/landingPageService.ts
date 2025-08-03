@@ -84,11 +84,12 @@ export class LandingPageService {
     }
   }
 
-  async savePageTemplate(template: Omit<PageTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<PageTemplate> {
+  async savePageTemplate(template: Omit<PageTemplate, 'id' | 'created_at' | 'updated_at'>, isDefault: boolean = false): Promise<PageTemplate> {
     try {
+      const templateData = { ...template, is_default: isDefault };
       const { data, error } = await supabase
         .from('page_templates')
-        .insert([template])
+        .insert([templateData])
         .select()
         .single();
 
@@ -113,6 +114,29 @@ export class LandingPageService {
       return data;
     } catch (error) {
       console.error('Error updating page template:', error);
+      throw errorHandlers.extractErrorMessage(error);
+    }
+  }
+
+  async setActiveTemplate(templateId: string): Promise<void> {
+    try {
+      // Step 1: Set all templates to is_default = false
+      const { error: resetError } = await supabase
+        .from('page_templates')
+        .update({ is_default: false })
+        .eq('page_type', 'landing');
+
+      if (resetError) throw resetError;
+
+      // Step 2: Set the selected template to is_default = true
+      const { error: setError } = await supabase
+        .from('page_templates')
+        .update({ is_default: true })
+        .eq('id', templateId);
+
+      if (setError) throw setError;
+    } catch (error) {
+      console.error('Error setting active template:', error);
       throw errorHandlers.extractErrorMessage(error);
     }
   }
