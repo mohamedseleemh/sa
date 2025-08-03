@@ -115,24 +115,56 @@ export const CustomizationProvider: React.FC<{ children: ReactNode }> = ({ child
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load customization from localStorage on mount
+  // Load customization from database on mount
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('kyctrust_customization');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setCustomization({ ...defaultCustomization, ...parsed });
+    const loadCustomization = async () => {
+      setLoading(true);
+      try {
+        const template = await landingPageService.getActiveLandingPageTemplate();
+        if (template && template.template_data && template.template_data.length > 0) {
+          const pageData = template.template_data[0] as any;
+          setCustomization({
+            hero: pageData.hero || defaultCustomization.hero,
+            globalSettings: pageData.styles || defaultCustomization.globalSettings,
+            pageElements: pageData.elements || [],
+            pageLayout: pageData.settings || defaultCustomization.pageLayout,
+          });
+        } else {
+          // If no template in DB, use default and save it
+          await landingPageService.savePageTemplate({
+            name: 'Default Landing Page',
+            page_type: 'landing',
+            template_data: [defaultCustomization],
+            theme_config: defaultCustomization.globalSettings,
+            is_default: true,
+            active: true,
+          });
+          setCustomization(defaultCustomization);
+        }
+      } catch (err) {
+        setError('فشل في تحميل بيانات التخصيص');
+        console.error('Error loading customization:', err);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading customization:', error);
-    }
+    };
+
+    loadCustomization();
   }, []);
 
-  const saveToStorage = (data: CustomizationData) => {
+  const saveToDatabase = async (data: CustomizationData) => {
     try {
-      localStorage.setItem('kyctrust_customization', JSON.stringify(data));
+      await landingPageService.savePageTemplate({
+        name: 'Default Landing Page',
+        page_type: 'landing',
+        template_data: [data],
+        theme_config: data.globalSettings,
+        is_default: true,
+        active: true,
+      });
     } catch (error) {
-      console.error('Error saving customization:', error);
+      console.error('Error saving customization to DB:', error);
+      throw new Error('فشل في حفظ التخصيص في قاعدة البيانات');
     }
   };
 
@@ -141,7 +173,7 @@ export const CustomizationProvider: React.FC<{ children: ReactNode }> = ({ child
       setLoading(true);
       const newCustomization = { ...customization, hero };
       setCustomization(newCustomization);
-      saveToStorage(newCustomization);
+      await saveToDatabase(newCustomization);
       setError(null);
     } catch (error) {
       const errorMessage = 'فشل في حفظ إعدادات القسم الرئيسي';
@@ -157,7 +189,7 @@ export const CustomizationProvider: React.FC<{ children: ReactNode }> = ({ child
       setLoading(true);
       const newCustomization = { ...customization, globalSettings: settings };
       setCustomization(newCustomization);
-      saveToStorage(newCustomization);
+      await saveToDatabase(newCustomization);
       setError(null);
 
       // Apply CSS variables to the document
@@ -183,7 +215,7 @@ export const CustomizationProvider: React.FC<{ children: ReactNode }> = ({ child
       setLoading(true);
       const newCustomization = { ...customization, pageElements: elements };
       setCustomization(newCustomization);
-      saveToStorage(newCustomization);
+      await saveToDatabase(newCustomization);
       setError(null);
     } catch (error) {
       const errorMessage = 'فشل في حفظ عناصر الصفحة';
@@ -199,7 +231,7 @@ export const CustomizationProvider: React.FC<{ children: ReactNode }> = ({ child
       setLoading(true);
       const newCustomization = { ...customization, pageLayout: { ...customization.pageLayout, ...layout } };
       setCustomization(newCustomization);
-      saveToStorage(newCustomization);
+      await saveToDatabase(newCustomization);
       setError(null);
     } catch (error) {
       const errorMessage = 'فشل في حفظ تخطيط الصفحة';

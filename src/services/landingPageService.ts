@@ -206,16 +206,25 @@ export class LandingPageService {
   }
 
   // Landing Page Sections Operations
-  async getLandingPageSections(): Promise<LandingPageSection[]> {
+  async getActiveLandingPageTemplate(): Promise<PageTemplate | null> {
     try {
       const templates = await this.getPageTemplates('landing');
-
       if (templates.length > 0) {
-        // Return the first active template's sections
-        const defaultTemplate = templates.find(t => t.is_default) || templates[0];
-        return defaultTemplate.template_data || [];
+        return templates.find(t => t.is_default) || templates[0];
       }
+      return null;
+    } catch (error) {
+      console.error('Error fetching active landing page template:', errorHandlers.extractErrorMessage(error));
+      return null;
+    }
+  }
 
+  async getLandingPageSections(): Promise<LandingPageSection[]> {
+    try {
+      const template = await this.getActiveLandingPageTemplate();
+      if (template) {
+        return template.template_data || [];
+      }
       // Return empty array if no templates found
       return [];
     } catch (error) {

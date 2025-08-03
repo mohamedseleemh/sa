@@ -101,22 +101,18 @@ export class SupabaseDatabaseService implements DatabaseService {
     const { data, error } = await supabase
       .from('payment_methods')
       .select('*')
-      .order('order_index');
+      .order('sort_order');
 
     if (error) throw new Error(`Failed to fetch payment methods: ${error.message}`);
     
     return data.map(this.mapPaymentMethodFromDB);
   }
 
-  async createPaymentMethod(method: Omit<PaymentMethod, 'id'>): Promise<PaymentMethod> {
+  async createPaymentMethod(method: Omit<PaymentMethod, 'id' | 'createdAt' | 'updatedAt'>): Promise<PaymentMethod> {
+    const dbMethod = this.mapPaymentMethodToDB(method);
     const { data, error } = await supabase
       .from('payment_methods')
-      .insert({
-        name: method.name,
-        details: method.details,
-        active: method.active,
-        type: 'manual'
-      })
+      .insert(dbMethod)
       .select()
       .single();
 
@@ -126,9 +122,10 @@ export class SupabaseDatabaseService implements DatabaseService {
   }
 
   async updatePaymentMethod(id: string, updates: Partial<PaymentMethod>): Promise<PaymentMethod> {
+    const dbUpdates = this.mapPaymentMethodToDB(updates);
     const { data, error } = await supabase
       .from('payment_methods')
-      .update(updates)
+      .update(dbUpdates)
       .eq('id', id)
       .select()
       .single();
@@ -740,9 +737,33 @@ export class SupabaseDatabaseService implements DatabaseService {
     return {
       id: data.id,
       name: data.name,
+      type: data.type,
       details: data.details,
-      active: data.active ?? true
+      isActive: data.is_active,
+      fees: data.fees,
+      limits: data.limits,
+      icon: data.icon,
+      color: data.color,
+      order: data.sort_order,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      instructions: data.instructions,
     };
+  }
+
+  private mapPaymentMethodToDB(method: Partial<PaymentMethod>): any {
+    const dbMethod: any = {};
+    if (method.name !== undefined) dbMethod.name = method.name;
+    if (method.type !== undefined) dbMethod.type = method.type;
+    if (method.details !== undefined) dbMethod.details = method.details;
+    if (method.isActive !== undefined) dbMethod.is_active = method.isActive;
+    if (method.fees !== undefined) dbMethod.fees = method.fees;
+    if (method.limits !== undefined) dbMethod.limits = method.limits;
+    if (method.icon !== undefined) dbMethod.icon = method.icon;
+    if (method.color !== undefined) dbMethod.color = method.color;
+    if (method.order !== undefined) dbMethod.sort_order = method.order;
+    if (method.instructions !== undefined) dbMethod.instructions = method.instructions;
+    return dbMethod;
   }
 
   private mapOrderFromDB(data: any): Order {

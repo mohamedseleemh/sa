@@ -88,6 +88,25 @@ const VisualLandingEditor: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 1200, height: 800 });
 
+  useEffect(() => {
+    const loadPage = async () => {
+      try {
+        const template = await landingPageService.getActiveLandingPageTemplate();
+        if (template && template.template_data && template.template_data.length > 0) {
+          const pageData = template.template_data[0] as any;
+          setElements(pageData.elements || []);
+          setGlobalStyles(pageData.styles || globalStyles);
+          setCanvasSize(pageData.settings?.canvasSize || { width: 1200, height: 800 });
+          saveToHistory(pageData.elements || []);
+        }
+      } catch (error) {
+        toast.error('فشل في تحميل بيانات الصفحة');
+        console.error('Error loading page data:', error);
+      }
+    };
+    loadPage();
+  }, []);
+
   // Templates
   const templates: Template[] = [
     {
@@ -358,11 +377,11 @@ const VisualLandingEditor: React.FC = () => {
       };
 
       await landingPageService.savePageTemplate({
-        name: 'صفحة مخصصة',
-        page_type: 'custom',
+        name: 'صفحة الهبوط',
+        page_type: 'landing',
         template_data: [pageData] as any,
         theme_config: globalStyles,
-        is_default: false,
+        is_default: true,
         active: true
       });
 

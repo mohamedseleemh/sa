@@ -4,6 +4,8 @@ import {
   DollarSign, Smartphone, Globe, Building, 
   Eye, EyeOff, Save, AlertCircle
 } from 'lucide-react';
+import { databaseService } from '../../services/database';
+import toast from 'react-hot-toast';
 
 interface PaymentMethod {
   id: string;
@@ -47,134 +49,65 @@ export const PaymentMethodsManager: React.FC = () => {
   }, []);
 
   const loadPaymentMethods = async () => {
+    setIsLoading(true);
     try {
-      // Check local storage first
-      const stored = localStorage.getItem('kyc-payment-methods');
-      if (stored) {
-        setPaymentMethods(JSON.parse(stored));
-      } else {
-        // Initialize with default payment methods
-        const defaultMethods: PaymentMethod[] = [
-          {
-            id: '1',
-            name: 'تحويل بنكي - البنك الأهلي',
-            type: 'bank',
-            details: {
-              iban: 'SA1234567890123456789012',
-              beneficiaryName: 'KYCtrust للخدمات الرقمية',
-              bankName: 'البنك الأهلي السعودي',
-              instructions: 'يرجى إرسال إيصال التحويل عبر الواتساب بعد الدفع'
-            },
-            isActive: true,
-            fees: { fixed: 0, percentage: 0 },
-            limits: { min: 100, max: 50000 },
-            icon: 'Building',
-            color: '#10B981',
-            order: 1,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            name: 'STCPay',
-            type: 'wallet',
-            details: {
-              walletNumber: '0551234567',
-              instructions: 'أرسل المبلغ إلى رقم المحفظة وأرسل لقطة الشاشة'
-            },
-            isActive: true,
-            fees: { fixed: 0, percentage: 2 },
-            limits: { min: 50, max: 10000 },
-            icon: 'Smartphone',
-            color: '#6366F1',
-            order: 2,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          },
-          {
-            id: '3',
-            name: 'مدى',
-            type: 'card',
-            details: {
-              instructions: 'سيتم توجيهك لصفحة الدفع الآمنة'
-            },
-            isActive: false,
-            fees: { fixed: 0, percentage: 2.5 },
-            limits: { min: 10, max: 5000 },
-            icon: 'CreditCard',
-            color: '#F59E0B',
-            order: 3,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ];
-        
-        setPaymentMethods(defaultMethods);
-        localStorage.setItem('kyc-payment-methods', JSON.stringify(defaultMethods));
-      }
+      const methods = await databaseService.getPaymentMethods();
+      setPaymentMethods(methods);
     } catch (error) {
       console.error('خطأ في تحميل طرق الدفع:', error);
+      toast.error('فشل في تحميل طرق الدفع');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const savePaymentMethods = (methods: PaymentMethod[]) => {
-    setPaymentMethods(methods);
-    localStorage.setItem('kyc-payment-methods', JSON.stringify(methods));
-    
-    // Also save to API if available
-    fetch('/api/payment-methods', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(methods)
-    }).catch(error => {
-      // API fallback - saved locally only
-    });
-  };
-
-  const handleSave = (method: PaymentMethod) => {
+  const handleSave = async (method: PaymentMethod) => {
     const isNew = !method.id || method.id === 'new';
     
-    if (isNew) {
-      const newMethod = {
-        ...method,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        order: paymentMethods.length + 1
-      };
-      savePaymentMethods([...paymentMethods, newMethod]);
-    } else {
-      const updatedMethods = paymentMethods.map(pm =>
-        pm.id === method.id 
-          ? { ...method, updatedAt: new Date().toISOString() }
-          : pm
-      );
-      savePaymentMethods(updatedMethods);
+    try {
+      if (isNew) {
+        await databaseService.createPaymentMethod(method);
+      } else {
+        await databaseService.updatePaymentMethod(method.id, method);
+      }
+      setIsModalOpen(false);
+      setEditingMethod(null);
+      loadPaymentMethods(); // Refresh the list
+      toast.success('تم حفظ طريقة الدفع بنجاح');
+    } catch (error) {
+      console.error('Error saving payment method:', error);
+      toast.error('فشل في حفظ طريقة الدفع');
     }
-    
-    setIsModalOpen(false);
-    setEditingMethod(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف طريقة الدفع هذه؟')) return;
     
-    const updatedMethods = paymentMethods.filter(pm => pm.id !== id);
-    savePaymentMethods(updatedMethods);
+    try {
+      await databaseService.deletePaymentMethod(id);
+      loadPaymentMethods();
+      toast.success('تم حذف طريقة الدفع بنجاح');
+    } catch (error) {
+      console.error('Error deleting payment method:', error);
+      toast.error('فشل في حذف طريقة الدفع');
+    }
   };
 
-  const toggleActive = (id: string) => {
-    const updatedMethods = paymentMethods.map(pm =>
-      pm.id === id 
-        ? { ...pm, isActive: !pm.isActive, updatedAt: new Date().toISOString() }
-        : pm
-    );
-    savePaymentMethods(updatedMethods);
+  const toggleActive = async (id: string) => {
+    const method = paymentMethods.find(pm => pm.id === id);
+    if (!method) return;
+
+    try {
+      await databaseService.updatePaymentMethod(id, { isActive: !method.isActive });
+      loadPaymentMethods();
+      toast.success(`تم ${method.isActive ? 'تعطيل' : 'تفعيل'} طريقة الدفع`);
+    } catch (error) {
+      console.error('Error toggling payment method:', error);
+      toast.error('فشل في تغيير حالة طريقة الدفع');
+    }
   };
 
-  const moveMethod = (id: string, direction: 'up' | 'down') => {
+  const moveMethod = async (id: string, direction: 'up' | 'down') => {
     const index = paymentMethods.findIndex(pm => pm.id === id);
     if (
       (direction === 'up' && index === 0) || 
@@ -186,13 +119,18 @@ export const PaymentMethodsManager: React.FC = () => {
     
     [newMethods[index], newMethods[newIndex]] = [newMethods[newIndex], newMethods[index]];
     
-    // Update order values
-    newMethods.forEach((method, idx) => {
-      method.order = idx + 1;
-      method.updatedAt = new Date().toISOString();
-    });
-    
-    savePaymentMethods(newMethods);
+    try {
+      // Update order values for both swapped items
+      await Promise.all([
+        databaseService.updatePaymentMethod(newMethods[index].id, { order: index + 1 }),
+        databaseService.updatePaymentMethod(newMethods[newIndex].id, { order: newIndex + 1 })
+      ]);
+      loadPaymentMethods();
+      toast.success('تم تحديث ترتيب طرق الدفع');
+    } catch (error) {
+      console.error('Error moving payment method:', error);
+      toast.error('فشل في تحديث ترتيب طرق الدفع');
+    }
   };
 
   const getTypeIcon = (type: string) => {

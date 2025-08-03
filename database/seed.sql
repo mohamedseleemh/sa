@@ -63,7 +63,9 @@ INSERT INTO payment_methods (id, name, type, details, is_active, fees, limits, i
 ('850e8400-e29b-41d4-a716-446655440003', 'STC Pay', 'wallet', '{"walletNumber": "+966501234567", "displayName": "KYCtrust"}', true, '{"fixed": 0, "percentage": 2}', '{"min": 10, "max": 10000}', 'Smartphone', '#6C2E8C', 3, 'أرسل المبلغ إلى رقم المحفظة وأرسل لقطة الشاشة مع رقم الطلب'),
 ('850e8400-e29b-41d4-a716-446655440004', 'Apple Pay', 'wallet', '{"merchantId": "merchant.com.kyctrust", "displayName": "KYCtrust"}', false, '{"fixed": 0, "percentage": 2.5}', '{"min": 10, "max": 5000}', 'Smartphone', '#000000', 4, 'استخدم Apple Pay للدفع الآمن والسريع'),
 ('850e8400-e29b-41d4-a716-446655440005', 'مدى', 'card', '{"gateway": "mada", "merchantId": "KYC12345"}', false, '{"fixed": 0, "percentage": 2.5}', '{"min": 10, "max": 5000}', 'CreditCard', '#0066CC', 5, 'سيتم توجيهك لصفحة الدفع الآمنة لإتمام المعاملة'),
-('850e8400-e29b-41d4-a716-446655440006', 'فيزا/ماستركارد', 'card', '{"gateway": "visa_mastercard", "merchantId": "KYC12345"}', false, '{"fixed": 0, "percentage": 3}', '{"min": 10, "max": 10000}', 'CreditCard', '#1A1F71', 6, 'ادفع بأمان باستخدام بطاقة فيزا أو ماستركارد')
+('850e8400-e29b-41d4-a716-446655440006', 'فيزا/ماستركارد', 'card', '{"gateway": "visa_mastercard", "merchantId": "KYC12345"}', false, '{"fixed": 0, "percentage": 3}', '{"min": 10, "max": 10000}', 'CreditCard', '#1A1F71', 6, 'ادفع بأمان باستخدام بطاقة فيزا أو ماستركارد'),
+('850e8400-e29b-41d4-a716-446655440007', 'فودافون كاش', 'wallet', '{"walletNumber": "01062453344", "displayName": "KYCtrust"}', true, '{"fixed": 0, "percentage": 1}', '{"min": 5, "max": 20000}', 'Smartphone', '#E60000', 7, 'يرجى إرسال لقطة شاشة بعد التحويل'),
+('850e8400-e29b-41d4-a716-446655440008', 'USDT (TRC20)', 'crypto', '{"cryptoAddress": "TFUt8GRpk2R8Wv3FvoCiSUghRBQo4HrmQK", "network": "TRC20"}', true, '{"fixed": 1, "percentage": 0}', '{"min": 10, "max": 100000}', 'Globe', '#26A17B', 8, 'تأكد من إرسال المبلغ على شبكة TRC20 فقط')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
