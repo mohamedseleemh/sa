@@ -68,9 +68,7 @@ const CustomElementsRenderer: React.FC = () => {
       ))}
       
       {/* Secure Custom CSS */}
-      {customization.pageLayout?.customCSS && (
-        <SafeCustomCSS css={customization.pageLayout.customCSS} />
-      )}
+      <SafeCustomCSS css={customization.pageLayout?.customCSS || ''} />
     </div>
   );
 };
@@ -86,43 +84,51 @@ interface SafeCustomCSSProps {
 }
 
 const SafeCustomCSS: React.FC<SafeCustomCSSProps> = ({ css }) => {
-  // Validate and sanitize CSS
-  const validation = validateCSSRules(css);
-
-  if (!validation.isValid) {
-    console.warn('🚨 Dangerous CSS detected and blocked:', validation.errors);
-    return null;
-  }
-
-  const sanitizedCSS = sanitizeCSSCompletely(css);
-
-  if (!sanitizedCSS) {
-    return null;
-  }
-
-  // Create a style element with sanitized CSS
   React.useEffect(() => {
     const styleId = 'kyctrust-custom-css';
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+    const existingElement = document.getElementById(styleId);
 
+    if (!css) {
+      if (existingElement) {
+        existingElement.remove();
+      }
+      return;
+    }
+
+    const validation = validateCSSRules(css);
+    if (!validation.isValid) {
+      console.warn('🚨 Dangerous CSS detected and blocked:', validation.errors);
+      if (existingElement) {
+        existingElement.remove();
+      }
+      return;
+    }
+
+    const sanitizedCSS = sanitizeCSSCompletely(css);
+    if (!sanitizedCSS) {
+      if (existingElement) {
+        existingElement.remove();
+      }
+      return;
+    }
+
+    let styleElement = existingElement as HTMLStyleElement | null;
     if (!styleElement) {
       styleElement = document.createElement('style');
       styleElement.id = styleId;
       document.head.appendChild(styleElement);
     }
-
     styleElement.textContent = sanitizedCSS;
 
     return () => {
-      // Cleanup on unmount
       const element = document.getElementById(styleId);
       if (element) {
         element.remove();
       }
     };
-  }, [sanitizedCSS]);
+  }, [css]);
 
-  return null; // Component doesn't render anything visually
+  return null;
 };
 
 export default CustomElementsRenderer;

@@ -22,7 +22,6 @@ const requiredFiles = [
   'api/site-settings.js',
   'api/page-templates.js',
   'api/themes.js',
-  'src/components/admin/AdminPanel.tsx',
   'src/components/admin/VisualEditor/PageBuilder.tsx',
   'src/services/database.ts',
   'package.json',
@@ -112,8 +111,8 @@ dbFiles.forEach(file => {
 // Check admin components
 console.log('\n👨‍💼 Checking admin panel components...');
 const adminComponents = [
-  'src/components/admin/AdminPanel.tsx',
-  'src/components/admin/Dashboard.tsx',
+  'src/components/admin/EnhancedAdminPanel.tsx',
+  'src/components/admin/AdvancedDashboard.tsx',
   'src/components/admin/ServicesManager.tsx',
   'src/components/admin/OrdersManager.tsx',
   'src/components/admin/PaymentMethodsManager.tsx',
@@ -158,10 +157,7 @@ if (fs.existsSync('.env.example')) {
   const requiredEnvVars = [
     'VITE_SUPABASE_URL',
     'VITE_SUPABASE_ANON_KEY', 
-    'ADMIN_PASSWORD',
-    'FEATURE_PAGE_BUILDER',
-    'FEATURE_PAYMENT_PROCESSING=false',
-    'FEATURE_USER_REGISTRATION=false'
+    'ADMIN_PASSWORD'
   ];
   
   let allEnvVarsPresent = true;

@@ -18,14 +18,11 @@ import SiteSettingsManager from './SiteSettingsManager';
 import AdminSettingsManager from './AdminSettingsManager';
 import DragDropManager from './DragDropManager';
 import ThemeManager from './ThemeManager';
-import LandingPageEditor from './LandingPageEditor';
 import ServicesLayoutEditor from './ServicesLayoutEditor';
 import { AnalyticsPanel } from './AnalyticsPanel';
 import UsersManager from './UsersManager';
 import ReportsManager from './ReportsManager';
 import { BackupManager } from './BackupManager';
-import LandingPageCustomizer from './LandingPageCustomizer';
-import PageBuilder from './VisualEditor/PageBuilder';
 import { useData } from '../../context/DataContext';
 
 type TabType = 
@@ -39,9 +36,6 @@ type TabType =
   | 'users' 
   | 'reports' 
   | 'backup' 
-  | 'customizer' 
-  | 'builder' 
-  | 'landing-editor' 
   | 'drag-drop' 
   | 'themes' 
   | 'admin-settings' 
@@ -132,10 +126,7 @@ const EnhancedAdminPanel: React.FC = () => {
       name: 'تصميم المحتوى',
       icon: Edit3,
       tabs: [
-        { id: 'visual-editor' as TabType, name: 'المحرر المرئي المتقدم', icon: Layers, color: 'text-indigo-600' },
-        { id: 'builder' as TabType, name: 'منشئ الصفحات', icon: Layout, color: 'text-pink-600' },
-        { id: 'landing-editor' as TabType, name: 'محرر صفحة الهبوط', icon: Monitor, color: 'text-cyan-600' },
-        { id: 'customizer' as TabType, name: 'تخصيص الموقع', icon: Palette, color: 'text-orange-600' },
+        { id: 'visual-editor' as TabType, name: 'محرر الصفحة المرئي', icon: Layers, color: 'text-indigo-600' },
         { id: 'themes' as TabType, name: 'إدارة الثيمات', icon: Paintbrush, color: 'text-red-600' },
         { id: 'templates' as TabType, name: 'مكتبة القوالب', icon: BookOpen, color: 'text-teal-600' }
       ]
@@ -192,10 +183,6 @@ const EnhancedAdminPanel: React.FC = () => {
         return <AdvancedDashboard />;
       case 'visual-editor':
         return <VisualLandingEditor />;
-      case 'builder':
-        return <PageBuilder />;
-      case 'landing-editor':
-        return <LandingPageEditor />;
       case 'services':
         return <ServicesManager />;
       case 'services-layout':
@@ -216,8 +203,6 @@ const EnhancedAdminPanel: React.FC = () => {
         return <ReportsManager />;
       case 'backup':
         return <BackupManager />;
-      case 'customizer':
-        return <LandingPageCustomizer />;
       case 'admin-settings':
         return <AdminSettingsManager />;
       case 'settings':

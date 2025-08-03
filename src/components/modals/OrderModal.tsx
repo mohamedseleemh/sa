@@ -158,7 +158,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, serviceName, s
           </div>
         );
 
-      case 2:
+      case 2: {
         const selectedPaymentMethod = activePaymentMethods.find(method => method.id === selectedPayment);
         
         return (
@@ -256,6 +256,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, serviceName, s
             </div>
           </div>
         );
+      }
 
       case 3:
         return (

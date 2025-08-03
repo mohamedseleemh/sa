@@ -179,7 +179,7 @@ export const DragDropManager: React.FC = () => {
         setEditForm(item);
         break;
         
-      case 'delete':
+      case 'delete': {
         if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
           const newCategories = categories.map(cat => ({
             ...cat,
@@ -189,8 +189,9 @@ export const DragDropManager: React.FC = () => {
           toast.success('تم حذف العنصر بنجاح');
         }
         break;
+      }
         
-      case 'toggle':
+      case 'toggle': {
         const newCategories = categories.map(cat => ({
           ...cat,
           items: cat.items.map(i => 
@@ -200,8 +201,9 @@ export const DragDropManager: React.FC = () => {
         setCategories(newCategories);
         toast.success(`تم ${item.active ? 'إلغاء تفعيل' : 'تفعيل'} العنصر`);
         break;
+      }
         
-      case 'duplicate':
+      case 'duplicate': {
         const duplicatedItem: DragDropItem = {
           ...item,
           id: `${item.id}-copy-${Date.now()}`,
@@ -222,8 +224,9 @@ export const DragDropManager: React.FC = () => {
           toast.success('تم ��نشاء نسخة من العنصر');
         }
         break;
+      }
         
-      case 'feature':
+      case 'feature': {
         // Move to featured category
         const featureCategories = [...categories];
         const sourceIndex = featureCategories.findIndex(cat => 
@@ -248,6 +251,7 @@ export const DragDropManager: React.FC = () => {
           toast.success('تم إضافة العنصر للمميزة');
         }
         break;
+      }
     }
   };
 
