@@ -1,9 +1,7 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useDrag } from 'react-dnd';
 import { 
-  Move, RotateCw, Copy, Trash2, Eye, EyeOff, Lock, Unlock,
-  MousePointer, Hand, ZoomIn, ZoomOut, Maximize, Minimize,
-  AlignLeft, AlignCenter, AlignRight, AlignJustify
+  Move, RotateCw, Copy, Trash2, Eye, EyeOff, Lock, Unlock
 } from 'lucide-react';
 import { PageElement } from '../../../context/CustomizationContext';
 
@@ -198,8 +196,8 @@ const EnhancedDragDrop: React.FC<EnhancedDragDropProps> = ({
       const deltaX = moveEvent.clientX - startX;
       const deltaY = moveEvent.clientY - startY;
 
-      let newSize = { ...startSize };
-      let newPosition = { ...startPosition };
+      const newSize = { ...startSize };
+      const newPosition = { ...startPosition };
 
       switch (handle) {
         case 'se':

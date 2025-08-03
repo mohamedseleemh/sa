@@ -791,9 +791,9 @@ const LandingPage: React.FC = () => {
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <div
-                key={index}
+                key={feature.title}
                 className={`group p-8 rounded-3xl border transition-all duration-500 hover:shadow-2xl ${
                   theme === 'dark' 
                     ? 'bg-gray-800/30 border-gray-700/30' 
@@ -878,7 +878,7 @@ const LandingPage: React.FC = () => {
 
           {/* Testimonials Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial) => (
               <div
                 key={testimonial.id}
                 className={`group p-8 rounded-3xl border transition-all duration-500 hover:scale-105 hover:shadow-2xl ${

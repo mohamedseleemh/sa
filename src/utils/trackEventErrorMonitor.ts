@@ -8,7 +8,7 @@
 // Enhanced console.error override specifically for trackEvent debugging
 const originalConsoleError = console.error;
 
-console.error = function(...args: any[]) {
+console.error = function(...args: unknown[]) {
   // Check if this is a trackEvent related error
   const isTrackEventError = args.some(arg => 
     (typeof arg === 'string' && arg.includes('trackEvent')) ||

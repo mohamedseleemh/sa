@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   Shield, Settings, Package, CreditCard, Inbox, BarChart3, RefreshCw,
-  Users, FileText, Database, Palette, Edit3, User, Move, Paintbrush,
-  Sliders, Grip, Layers, Layout, Activity, Zap, Eye, Monitor,
-  Smartphone, Tablet, Code, Download, Upload, Bell, Search,
-  Filter, Calendar, Clock, Globe, Target, Award, Star,
-  TrendingUp, DollarSign, MessageCircle, HelpCircle, BookOpen,
-  Cloud, Server, Cpu, HardDrive, Wifi, Lock, Key, AlertTriangle
+  Users, FileText, Database, Edit3, User, Move, Paintbrush,
+  Sliders, Grip, Layers, Activity, Zap, Bell, Search,
+  Globe, Star,
+  Cloud, Server, Cpu, HardDrive, Wifi, Lock, AlertTriangle, BookOpen
 } from 'lucide-react';
 import LoginForm from './LoginForm';
 import AdvancedDashboard from './AdvancedDashboard';
@@ -63,7 +61,7 @@ const EnhancedAdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
+  const [notifications] = useState<NotificationItem[]>([
     {
       id: '1',
       title: 'طلب جديد',

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Eye, EyeOff, Save, RefreshCw, Settings, Palette, 
-  Grid, List, Plus, Trash2, Edit3, Copy, Move,
-  Star, DollarSign, Package, Zap, Shield, Heart,
+  Eye, EyeOff, Save, RefreshCw,
+  Grid, Plus, Trash2, Edit3, Copy, Move,
+  Star, Package, Zap, Shield, Heart,
   TrendingUp, Award, Target, Clock, Users, CheckCircle,
-  ArrowUp, ArrowDown, MoreVertical, Search, Filter
+  ArrowUp, ArrowDown, Search
 } from 'lucide-react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -340,7 +340,7 @@ const CategorySection: React.FC<{
                 </label>
                 <select
                   value={category.layout}
-                  onChange={(e) => onUpdateCategory(category.id, { layout: e.target.value as any })}
+                    onChange={(e) => onUpdateCategory(category.id, { layout: e.target.value as 'grid' | 'carousel' | 'masonry' | 'tabs' })}
                   className="w-full text-xs px-2 py-1 border border-gray-300 dark:border-gray-700 rounded
                            bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
@@ -860,7 +860,7 @@ export const ServicesLayoutEditor: React.FC = () => {
                     </label>
                     <select
                       value={editForm.layout || 'card'}
-                      onChange={(e) => setEditForm({...editForm, layout: e.target.value as any})}
+                      onChange={(e) => setEditForm({...editForm, layout: e.target.value as 'card' | 'list' | 'minimal' | 'detailed'})}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
                                bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                     >
@@ -876,7 +876,7 @@ export const ServicesLayoutEditor: React.FC = () => {
                     </label>
                     <select
                       value={editForm.animation || 'fadeIn'}
-                      onChange={(e) => setEditForm({...editForm, animation: e.target.value as any})}
+                      onChange={(e) => setEditForm({...editForm, animation: e.target.value as 'none' | 'fadeIn' | 'slideUp' | 'zoom' | 'bounce'})}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
                                bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                     >

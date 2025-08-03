@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Palette, Monitor, Smartphone, Tablet, Eye, Save, Download, Upload,
-  RefreshCw, Copy, Share2, Settings, Sun, Moon, Contrast, Zap,
-  Paintbrush, Layout, Type, Sparkles, Image, Grid, Sliders,
-  CheckCircle, AlertCircle, X, Plus, Edit3, Trash2, Star
+  Palette, Monitor, Smartphone, Tablet, Eye, Save, Download,
+  Copy,
+  Layout, Type, Grid,
+  CheckCircle, X, Plus, Trash2, Star
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -438,7 +438,7 @@ export const ThemeManager: React.FC = () => {
     toast.success('تم نسخ الثيم');
   };
 
-  const updateThemeProperty = (path: string, value: any) => {
+  const updateThemeProperty = (path: string, value: string | number | boolean) => {
     if (!customTheme) return;
     
     const pathArray = path.split('.');
@@ -667,7 +667,7 @@ export const ThemeManager: React.FC = () => {
                   return (
                     <button
                       key={device.id}
-                      onClick={() => setPreviewMode(device.id as any)}
+                      onClick={() => setPreviewMode(device.id as 'desktop' | 'tablet' | 'mobile')}
                       className={`flex items-center px-3 py-2 rounded-lg ${
                         previewMode === device.id
                           ? 'bg-blue-600 text-white'
@@ -695,7 +695,7 @@ export const ThemeManager: React.FC = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setSelectedTab(tab.id as any)}
+                    onClick={() => setSelectedTab(tab.id as 'colors' | 'typography' | 'spacing' | 'components' | 'preview')}
                     className={`flex items-center px-6 py-3 text-sm font-medium border-b-2 ${
                       selectedTab === tab.id
                         ? 'border-blue-500 text-blue-600 dark:text-blue-400'

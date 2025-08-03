@@ -54,7 +54,7 @@ export const testLandingPageErrorHandling = async (): Promise<void> => {
 
 // Make test available globally in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
-  (window as any).testLandingPageErrorHandling = testLandingPageErrorHandling;
+  (window as unknown as { testLandingPageErrorHandling: () => Promise<void> }).testLandingPageErrorHandling = testLandingPageErrorHandling;
   console.log('🧪 Landing page error handling test available: testLandingPageErrorHandling()');
 }
 

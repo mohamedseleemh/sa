@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Search, Filter, Eye, Edit, Trash2, Phone, Mail, Calendar, 
+  Search, Eye, Trash2, Phone, Mail, Calendar,
   DollarSign, CheckCircle, Clock, XCircle, AlertCircle, Download, 
-  ExternalLink, MessageCircle, User, Package
+  MessageCircle, User, Package
 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 
@@ -33,17 +33,10 @@ export const OrdersManager: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'date' | 'amount' | 'status'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    if (orders) {
-      applyFilters();
-    }
-  }, [orders, searchTerm, statusFilter, priorityFilter, dateFilter, sortBy, sortOrder]);
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     if (!orders) return;
 
     let filtered = [...orders];
@@ -121,7 +114,13 @@ export const OrdersManager: React.FC = () => {
     });
 
     setFilteredOrders(filtered);
-  };
+  }, [dateFilter, orders, priorityFilter, sortBy, sortOrder, statusFilter, searchTerm]);
+
+  useEffect(() => {
+    if (orders) {
+      applyFilters();
+    }
+  }, [orders, applyFilters]);
 
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -151,7 +150,7 @@ export const OrdersManager: React.FC = () => {
     }
   };
 
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateOrderStatus = async (orderId: string, newStatus: "pending" | "processing" | "completed" | "cancelled") => {
     if (!orders) return;
 
     const updatedOrders = orders.map(order =>
@@ -163,7 +162,7 @@ export const OrdersManager: React.FC = () => {
     updateOrders(updatedOrders);
   };
 
-  const updateOrderPriority = async (orderId: string, newPriority: string) => {
+  const updateOrderPriority = async (orderId: string, newPriority: "low" | "medium" | "high") => {
     if (!orders) return;
 
     const updatedOrders = orders.map(order =>
@@ -426,7 +425,6 @@ export const OrdersManager: React.FC = () => {
                 filteredOrders.map((order) => {
                   const statusInfo = getStatusInfo(order.status);
                   const priorityInfo = getPriorityInfo(order.priority);
-                  const StatusIcon = statusInfo.icon;
 
                   return (
                     <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">

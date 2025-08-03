@@ -15,13 +15,17 @@ const ElementPropertiesEditor: React.FC<ElementPropertiesEditorProps> = ({ selec
     );
   }
 
-  const handleStyleChange = (property: string, value: any) => {
-    const newStyles = { ...selectedElement.styles, [property]: value };
-    onUpdateElement(selectedElement.id, { styles: newStyles });
+  const handleStyleChange = (property: string, value: string | number) => {
+    if (selectedElement) {
+      const newStyles = { ...selectedElement.styles, [property]: value };
+      onUpdateElement(selectedElement.id, { styles: newStyles });
+    }
   };
 
-  const handleContentChange = (content: any) => {
-    onUpdateElement(selectedElement.id, { content });
+  const handleContentChange = (content: string | Record<string, unknown>) => {
+    if (selectedElement) {
+      onUpdateElement(selectedElement.id, { content });
+    }
   };
 
   return (

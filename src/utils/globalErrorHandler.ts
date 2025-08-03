@@ -18,7 +18,7 @@ const originalConsoleLog = console.log;
  * Check if any argument is an unserialized object
  * التحقق من وجود كائن غير مسلسل في المعاملات
  */
-const hasUnserializedObject = (args: any[]): boolean => {
+const hasUnserializedObject = (args: unknown[]): boolean => {
   return args.some(arg => {
     if (typeof arg === 'object' && arg !== null) {
       const stringified = String(arg);
@@ -32,7 +32,7 @@ const hasUnserializedObject = (args: any[]): boolean => {
  * Serialize arguments properly
  * تسلسل المعاملات بشكل صحيح
  */
-const serializeArgs = (args: any[]): any[] => {
+const serializeArgs = (args: unknown[]): unknown[] => {
   return args.map(arg => {
     if (typeof arg === 'object' && arg !== null) {
       const stringified = String(arg);
@@ -68,7 +68,7 @@ const serializeArgs = (args: any[]): any[] => {
  * Enhanced console.error that prevents [object Object] logs
  * console.error محسن يمنع سجلات [object Object]
  */
-const enhancedConsoleError = (...args: any[]) => {
+const enhancedConsoleError = (...args: unknown[]) => {
   if (hasUnserializedObject(args)) {
     const serializedArgs = serializeArgs(args);
     originalConsoleError('🔧 [Fixed Error Log]:', ...serializedArgs);
@@ -86,7 +86,7 @@ const enhancedConsoleError = (...args: any[]) => {
  * Enhanced console.warn that prevents [object Object] logs
  * console.warn محسن يمنع سجلات [object Object]
  */
-const enhancedConsoleWarn = (...args: any[]) => {
+const enhancedConsoleWarn = (...args: unknown[]) => {
   if (hasUnserializedObject(args)) {
     const serializedArgs = serializeArgs(args);
     originalConsoleWarn('🔧 [Fixed Warning Log]:', ...serializedArgs);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   CreditCard, Plus, Edit2, Trash2, Check, X, 
   DollarSign, Smartphone, Globe, Building, 
-  Eye, EyeOff, Save, AlertCircle
+  Eye, EyeOff, Save
 } from 'lucide-react';
 import { databaseService } from '../../services/database';
 import toast from 'react-hot-toast';
@@ -414,7 +414,7 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({ method, onSave, o
     onSave(formData);
   };
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

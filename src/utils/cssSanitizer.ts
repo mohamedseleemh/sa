@@ -207,7 +207,7 @@ export const filterSafeCSS = (css: string): string => {
       if (!selector || !declarations) return;
 
       // Validate selector is safe (basic validation)
-      const safeSelectorPattern = /^[a-zA-Z0-9\s\.\#\-\:,\>\+\~\[\]"'=]*$/;
+      const safeSelectorPattern = /^[a-zA-Z0-9\s.#\-:,>+~[\]"'=]*$/;
       if (!safeSelectorPattern.test(selector.trim())) return;
 
       // Filter declarations

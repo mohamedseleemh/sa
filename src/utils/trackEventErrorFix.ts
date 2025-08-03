@@ -7,7 +7,7 @@
 const originalConsoleError = console.error;
 
 // Check if the error message contains trackEvent related text
-const isTrackEventError = (args: any[]): boolean => {
+const isTrackEventError = (args: unknown[]): boolean => {
   return args.some(arg => 
     typeof arg === 'string' && 
     (arg.includes('track_event') || 
@@ -17,7 +17,7 @@ const isTrackEventError = (args: any[]): boolean => {
 };
 
 // Enhanced console.error that fixes trackEvent errors
-const enhancedConsoleError = (...args: any[]) => {
+const enhancedConsoleError = (...args: unknown[]) => {
   if (isTrackEventError(args)) {
     // Format the error properly
     const formattedArgs = args.map(arg => {

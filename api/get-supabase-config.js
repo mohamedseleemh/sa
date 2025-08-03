@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // التحقق من وجود متغيرات البيئة
+    // Check for environment variables
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
     
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // التحقق من صحة الإعدادات
+    // Check if the credentials are placeholder values
     if (supabaseUrl.includes('your-project') || supabaseAnonKey.includes('your-anon-key')) {
       return res.status(200).json({
         configured: false,

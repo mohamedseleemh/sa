@@ -7,7 +7,7 @@
  */
 
 import { logError, logWarning, logInfo, errorHandlers } from './errorHandler';
-import { testTrackEventErrors, quickTrackEventTest } from './trackEventTest';
+import { testTrackEventErrors } from './trackEventTest';
 
 /**
  * Test different types of error logging

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Users, UserPlus, Shield, Search, Filter, MoreVertical, Edit2, Trash2, UserCheck, UserX, Calendar, Activity, Award, ChevronDown } from 'lucide-react';
+import { Users, UserPlus, Shield, Search, Edit2, Trash2, UserCheck, UserX, Calendar, Activity, Award, ChevronDown } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
@@ -57,9 +57,6 @@ const UsersManager: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const filteredUsers = useMemo(() => {
     return users.filter(user => {

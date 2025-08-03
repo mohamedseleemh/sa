@@ -52,7 +52,7 @@ function extractErrorMessageTest(error: unknown): string {
   }
   
   if (error && typeof error === 'object') {
-    const obj = error as any;
+    const obj = error as Record<string, unknown>;
     
     // Specific handling for Supabase/PostgrestError
     if (obj.message && typeof obj.message === 'string') {
@@ -99,7 +99,7 @@ function extractErrorMessageTest(error: unknown): string {
 
 // Auto-run in development - DISABLED to prevent test errors
 // Tests can be run manually using: testTrackEventErrorHandling()
-if (import.meta.env.DEV && false) {
+if (import.meta.env.DEV && import.meta.env.VITE_AUTO_RUN_TESTS) {
   console.log('🚀 Auto-running trackEvent error handling tests...');
   testTrackEventErrorHandling();
 }

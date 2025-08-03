@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Trash2, CheckCircle, Eye, Save } from 'lucide-react';
+import { BookOpen, Trash2, CheckCircle, Eye, Save } from 'lucide-react';
 import { landingPageService, type PageTemplate } from '../../services/landingPageService';
 import toast from 'react-hot-toast';
 import { useCustomization } from '../../context/CustomizationContext';
@@ -77,7 +77,7 @@ export const TemplatesManager: React.FC = () => {
       await landingPageService.savePageTemplate({
         name: newTemplateName.trim(),
         page_type: 'landing',
-        template_data: [pageData] as any,
+        template_data: [pageData],
         theme_config: customization.globalSettings,
         active: true,
       }, false); // Not default

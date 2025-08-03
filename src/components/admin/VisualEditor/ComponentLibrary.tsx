@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { 
   Grid, Type, Image as ImageIcon, Video, Quote, Star, 
-  CreditCard, Users, Calendar, BarChart, Mail, Phone,
-  Search, Filter, ChevronDown, Plus, Package
+  CreditCard, BarChart, Mail,
+  Search, ChevronDown, Package
 } from 'lucide-react';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -11,16 +11,15 @@ interface ComponentTemplate {
   id: string;
   name: string;
   type: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   category: string;
   preview: string;
-  defaultContent: any;
+  defaultContent: Record<string, unknown>;
   description: string;
 }
 
 interface ComponentLibraryProps {
   templates: ComponentTemplate[];
-  onAddComponent: (template: ComponentTemplate) => void;
 }
 
 const DraggableComponent: React.FC<{ template: ComponentTemplate }> = ({ template }) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { PageElement, PageTheme } from './PageBuilder';
 import { 
   CreditCard, Users, Star, Quote, BarChart, 
-  Type, Image as ImageIcon, Video, Mail 
+  Type, Image as ImageIcon, Video
 } from 'lucide-react';
 import HeaderRenderer from '../../rendering/HeaderRenderer';
 import FooterRenderer from '../../rendering/FooterRenderer';
@@ -27,7 +27,7 @@ const ElementRenderer: React.FC<ElementRendererProps> = ({ element, theme, isEdi
       borderWidth: element.styles.borderWidth ? `${element.styles.borderWidth}px` : undefined,
       borderColor: element.styles.borderColor,
       borderStyle: element.styles.borderWidth ? 'solid' : undefined,
-      textAlign: element.content.alignment as any,
+      textAlign: element.content.alignment as 'left' | 'center' | 'right' | 'justify',
     };
 
     return styles;
@@ -132,7 +132,7 @@ const ElementRenderer: React.FC<ElementRendererProps> = ({ element, theme, isEdi
   const renderStats = () => (
     <div className="w-full h-full p-6" style={getElementStyles()}>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        {element.content.stats?.map((stat: any, i: number) => (
+        {element.content.stats?.map((stat: { value: string; suffix: string; label: string }, i: number) => (
           <div key={i} className="space-y-2">
             <div className="text-3xl font-bold" style={{ color: theme?.colors.primary }}>
               {stat.value}{stat.suffix || ''}

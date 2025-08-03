@@ -81,7 +81,7 @@ class TrackEventCircuitBreaker {
   /**
    * Record a failed execution
    */
-  recordFailure(error?: any): void {
+  recordFailure(error?: unknown): void {
     this.state.failureCount++;
     this.state.lastFailureTime = Date.now();
 
@@ -142,9 +142,9 @@ export const trackEventCircuitBreaker = new TrackEventCircuitBreaker();
 
 // Enhanced trackEvent wrapper with circuit breaker
 export const safeTrackEvent = async (
-  originalTrackEvent: (eventType: string, metadata?: any) => Promise<void>,
+  originalTrackEvent: (eventType: string, metadata?: Record<string, unknown>) => Promise<void>,
   eventType: string,
-  metadata?: any
+  metadata?: Record<string, unknown>
 ): Promise<void> => {
   // Check if circuit breaker allows execution
   if (!trackEventCircuitBreaker.canExecute()) {
@@ -173,7 +173,7 @@ export const safeTrackEvent = async (
 
 // Expose for debugging
 if (typeof window !== 'undefined') {
-  (window as any).trackEventCircuitBreaker = trackEventCircuitBreaker;
+  (window as unknown as { trackEventCircuitBreaker: TrackEventCircuitBreaker }).trackEventCircuitBreaker = trackEventCircuitBreaker;
 }
 
 export default trackEventCircuitBreaker;

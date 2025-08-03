@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Globe, Mail, Phone, MapPin, Clock, Save, 
-  Upload, Image, Link, MessageCircle, Shield, 
-  Eye, Settings, Palette, Code, Database,
+  Globe, Save,
+  MessageCircle, Shield,
+  Settings, Palette,
   AlertCircle, Check, X
 } from 'lucide-react';
 
@@ -215,7 +215,7 @@ export const SiteSettingsManager: React.FC = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(settings)
         });
-      } catch (apiError) {
+      } catch (e) {
         // API fallback - settings saved locally only
       }
       
@@ -229,27 +229,27 @@ export const SiteSettingsManager: React.FC = () => {
     }
   };
 
-  const updateSetting = (section: string, field: string, value: any) => {
+  const updateSetting = (section: keyof SiteSettings, field: string, value: string | number | boolean) => {
     if (!settings) return;
     
     setSettings(prev => ({
       ...prev!,
       [section]: {
-        ...prev![section as keyof SiteSettings],
+        ...prev![section],
         [field]: value
       }
     }));
   };
 
-  const updateNestedSetting = (section: string, subsection: string, field: string, value: any) => {
+  const updateNestedSetting = (section: keyof SiteSettings, subsection: string, field: string, value: string | boolean) => {
     if (!settings) return;
     
     setSettings(prev => ({
       ...prev!,
       [section]: {
-        ...prev![section as keyof SiteSettings],
+        ...prev![section],
         [subsection]: {
-          ...(prev![section as keyof SiteSettings] as any)[subsection],
+          ...(prev![section] as any)[subsection],
           [field]: value
         }
       }

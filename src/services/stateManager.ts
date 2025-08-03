@@ -195,8 +195,8 @@ export const appState = {
     if (key) {
       const cache = appStateManager.getField('dataCache');
       const timestamps = appStateManager.getField('cacheTimestamps');
-      const { [key]: removedData, ...newCache } = cache;
-      const { [key]: removedTimestamp, ...newTimestamps } = timestamps;
+      const { [key]: _, ...newCache } = cache;
+      const { [key]: __, ...newTimestamps } = timestamps;
       
       appStateManager.setState({
         dataCache: newCache,

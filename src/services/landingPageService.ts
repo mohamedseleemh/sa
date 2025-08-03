@@ -60,173 +60,136 @@ export interface LandingCustomization {
 }
 
 export class LandingPageService {
+  private async _handleDbCall<T>(dbCall: Promise<{ data: T; error: any; }>, errorMessage: string): Promise<T> {
+    try {
+      const { data, error } = await dbCall;
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.error(errorMessage, error);
+      throw errorHandlers.extractErrorMessage(error);
+    }
+  }
+
   // Page Templates Operations
   async getPageTemplates(pageType: string = 'landing'): Promise<PageTemplate[]> {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await supabase
         .from('page_templates')
         .select('*')
         .eq('page_type', pageType)
         .eq('active', true)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.warn('Database error fetching page templates:', errorHandlers.extractErrorMessage(error));
-        // Return empty array instead of throwing for template fetching
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      console.warn('Network error fetching page templates:', errorHandlers.extractErrorMessage(error));
-      // Return empty array for graceful degradation
+    if (error) {
+      console.warn('Database error fetching page templates:', errorHandlers.extractErrorMessage(error));
       return [];
     }
+
+    return data || [];
   }
 
   async savePageTemplate(template: Omit<PageTemplate, 'id' | 'created_at' | 'updated_at'>, isDefault: boolean = false): Promise<PageTemplate> {
-    try {
-      const templateData = { ...template, is_default: isDefault };
-      const { data, error } = await supabase
+    const templateData = { ...template, is_default: isDefault };
+    const dbCall = supabase
         .from('page_templates')
         .insert([templateData])
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error saving page template:', error);
-      throw errorHandlers.extractErrorMessage(error);
-    }
+    return this._handleDbCall(dbCall, 'Error saving page template:');
   }
 
   async updatePageTemplate(id: string, updates: Partial<PageTemplate>): Promise<PageTemplate> {
-    try {
-      const { data, error } = await supabase
+    const dbCall = supabase
         .from('page_templates')
         .update(updates)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating page template:', error);
-      throw errorHandlers.extractErrorMessage(error);
-    }
+    return this._handleDbCall(dbCall, 'Error updating page template:');
   }
 
   async setActiveTemplate(templateId: string): Promise<void> {
-    try {
-      // Step 1: Set all templates to is_default = false
-      const { error: resetError } = await supabase
+    await this._handleDbCall(
+      supabase
         .from('page_templates')
         .update({ is_default: false })
-        .eq('page_type', 'landing');
+        .eq('page_type', 'landing'),
+      'Error resetting active template:'
+    );
 
-      if (resetError) throw resetError;
-
-      // Step 2: Set the selected template to is_default = true
-      const { error: setError } = await supabase
+    await this._handleDbCall(
+      supabase
         .from('page_templates')
         .update({ is_default: true })
-        .eq('id', templateId);
-
-      if (setError) throw setError;
-    } catch (error) {
-      console.error('Error setting active template:', error);
-      throw errorHandlers.extractErrorMessage(error);
-    }
+        .eq('id', templateId),
+      'Error setting active template:'
+    );
   }
 
   async deletePageTemplate(id: string): Promise<void> {
-    try {
-      const { error } = await supabase
+    const dbCall = supabase
         .from('page_templates')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting page template:', error);
-      throw errorHandlers.extractErrorMessage(error);
-    }
+    await this._handleDbCall(dbCall, 'Error deleting page template:');
   }
 
   // Landing Page Customization Operations
   async getLandingCustomization(sectionName?: string): Promise<LandingCustomization[]> {
-    try {
-      let query = supabase
-        .from('landing_customization')
-        .select('*')
-        .eq('active', true);
+    let query = supabase
+      .from('landing_customization')
+      .select('*')
+      .eq('active', true);
 
-      if (sectionName) {
-        query = query.eq('section_name', sectionName);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching landing customization:', error);
-      throw errorHandlers.extractErrorMessage(error);
+    if (sectionName) {
+      query = query.eq('section_name', sectionName);
     }
+
+    const dbCall = query.order('created_at', { ascending: false });
+
+    return this._handleDbCall(dbCall, 'Error fetching landing customization:');
   }
 
   async saveLandingCustomization(sectionName: string, content: any): Promise<LandingCustomization> {
-    try {
-      // First, try to update existing customization
-      const { data: existingData } = await supabase
+    const { data: existingData } = await supabase
+      .from('landing_customization')
+      .select('id')
+      .eq('section_name', sectionName)
+      .eq('active', true)
+      .single();
+
+    if (existingData) {
+      const dbCall = supabase
         .from('landing_customization')
-        .select('id')
-        .eq('section_name', sectionName)
-        .eq('active', true)
+        .update({ content, updated_at: new Date().toISOString() })
+        .eq('id', existingData.id)
+        .select()
         .single();
 
-      if (existingData) {
-        // Update existing
-        const { data, error } = await supabase
-          .from('landing_customization')
-          .update({ content, updated_at: new Date().toISOString() })
-          .eq('id', existingData.id)
-          .select()
-          .single();
+      return this._handleDbCall(dbCall, 'Error updating landing customization:');
+    } else {
+      const dbCall = supabase
+        .from('landing_customization')
+        .insert([{ section_name: sectionName, content }])
+        .select()
+        .single();
 
-        if (error) throw error;
-        return data;
-      } else {
-        // Create new
-        const { data, error } = await supabase
-          .from('landing_customization')
-          .insert([{ section_name: sectionName, content }])
-          .select()
-          .single();
-
-        if (error) throw error;
-        return data;
-      }
-    } catch (error) {
-      console.error('Error saving landing customization:', error);
-      throw errorHandlers.extractErrorMessage(error);
+      return this._handleDbCall(dbCall, 'Error creating landing customization:');
     }
   }
 
   async deleteLandingCustomization(id: string): Promise<void> {
-    try {
-      const { error } = await supabase
-        .from('landing_customization')
-        .update({ active: false })
-        .eq('id', id);
+    const dbCall = supabase
+      .from('landing_customization')
+      .update({ active: false })
+      .eq('id', id);
 
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting landing customization:', error);
-      throw errorHandlers.extractErrorMessage(error);
-    }
+    await this._handleDbCall(dbCall, 'Error deleting landing customization:');
   }
 
   // Landing Page Sections Operations

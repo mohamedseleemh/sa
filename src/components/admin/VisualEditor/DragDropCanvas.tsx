@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useRef, useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { Copy, Trash2, Edit3, Move, Settings } from 'lucide-react';
+import { Copy, Trash2, Edit3 } from 'lucide-react';
 import { PageElement, PageTheme } from './PageBuilder';
 import DraggableElement from './DraggableElement';
 import GridOverlay from './GridOverlay';
@@ -59,7 +59,7 @@ const DragDropCanvas = forwardRef<HTMLDivElement, DragDropCanvasProps>(({
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'component',
-    drop: (item: any, monitor) => {
+    drop: (item: PageElement, monitor) => {
       const offset = monitor.getClientOffset();
       const canvasRect = canvasRef.current?.getBoundingClientRect();
       

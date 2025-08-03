@@ -1,25 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { FileText, Download, Calendar, TrendingUp, Filter, Search, BarChart3, PieChart, LineChart, Mail, Printer, Share2, RefreshCw } from 'lucide-react';
+import { FileText, Download, Calendar, TrendingUp, BarChart3, PieChart, Mail, Printer, Share2, RefreshCw } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
-interface ReportConfig {
-  id: string;
-  name: string;
-  description: string;
-  type: 'orders' | 'services' | 'users' | 'analytics';
-  format: 'pdf' | 'excel' | 'csv';
-  frequency: 'daily' | 'weekly' | 'monthly' | 'custom';
-  dateRange: {
-    start: Date;
-    end: Date;
-  };
-  filters: Record<string, any>;
-}
-
 const ReportsManager: React.FC = () => {
-  const { orders, services, paymentMethods } = useData();
+  const { orders, services } = useData();
   const { theme } = useTheme();
   
   const [activeTab, setActiveTab] = useState<'generate' | 'scheduled' | 'history'>('generate');
@@ -103,32 +89,32 @@ const ReportsManager: React.FC = () => {
   // حساب الإحصائيات للتقارير
   const reportStats = useMemo(() => {
     const filteredOrders = orders.filter(order => {
-      const orderDate = new Date(order.timestamp);
+      const orderDate = new Date(order.createdAt);
       return orderDate >= dateRange.start && orderDate <= dateRange.end;
     });
 
     const totalOrders = filteredOrders.length;
-    const completedOrders = filteredOrders.filter(order => order.archived).length;
+    const completedOrders = filteredOrders.filter(order => order.status === 'completed').length;
     const pendingOrders = totalOrders - completedOrders;
     
     const serviceStats = services.map(service => ({
       name: service.name,
       orders: filteredOrders.filter(order => order.serviceName === service.name).length,
-      revenue: filteredOrders.filter(order => order.serviceName === service.name).length * parseFloat(service.price.toString())
+      revenue: filteredOrders.filter(order => order.serviceName === service.name).reduce((acc, o) => acc + o.amount, 0)
     }));
 
     const dailyStats = Array.from({ length: 7 }, (_, i) => {
       const date = new Date(dateRange.end);
       date.setDate(date.getDate() - i);
       const dayOrders = filteredOrders.filter(order => {
-        const orderDate = new Date(order.timestamp);
+        const orderDate = new Date(order.createdAt);
         return orderDate.toDateString() === date.toDateString();
       });
       
       return {
         date: date.toLocaleDateString('ar-EG', { weekday: 'short' }),
         orders: dayOrders.length,
-        revenue: dayOrders.length * 25 // متوسط سعر تقديري
+        revenue: dayOrders.reduce((acc, o) => acc + o.amount, 0)
       };
     }).reverse();
 
@@ -136,7 +122,7 @@ const ReportsManager: React.FC = () => {
       totalOrders,
       completedOrders,
       pendingOrders,
-      totalRevenue: filteredOrders.length * 25,
+      totalRevenue: filteredOrders.reduce((acc, o) => acc + o.amount, 0),
       serviceStats,
       dailyStats
     };
@@ -149,19 +135,11 @@ const ReportsManager: React.FC = () => {
       // محاكاة عملية إنشاء التقرير
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      const reportData = {
-        type: selectedReportType,
-        dateRange,
-        format: reportFormat,
-        data: reportStats,
-        generatedAt: new Date()
-      };
-
       // محاكاة تحميل الملف
       const fileName = `${reportTypes.find(r => r.id === selectedReportType)?.name || 'تقرير'}_${new Date().toISOString().split('T')[0]}.${reportFormat}`;
       
       toast.success(`تم إنشاء التقرير بنجاح: ${fileName}`);
-    } catch (error) {
+    } catch (e) {
       toast.error('فشل في إنشاء التقرير');
     } finally {
       setIsGenerating(false);

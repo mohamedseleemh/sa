@@ -46,12 +46,12 @@ export const testTrackEventErrorHandling = async (): Promise<void> => {
     
     // Test 2: Null metadata
     console.log('Test 2: Null metadata');
-    await databaseService.trackEvent('null_test', null);
+    await databaseService.trackEvent('null_test', null as any);
     console.log('✅ Null metadata handled gracefully');
     
     // Test 3: Undefined metadata
     console.log('Test 3: Undefined metadata');
-    await databaseService.trackEvent('undefined_test', undefined);
+    await databaseService.trackEvent('undefined_test', undefined as any);
     console.log('✅ Undefined metadata handled gracefully');
     
     // Test 4: Complex metadata with potential circular references
@@ -166,11 +166,41 @@ export const runAllTests = async (): Promise<void> => {
 
 // Make functions available globally for browser console
 if (typeof window !== 'undefined') {
-  (window as any).testTrackEventErrorHandling = testTrackEventErrorHandling;
-  (window as any).testNormalTrackEvent = testNormalTrackEvent;
-  (window as any).testNetworkErrors = testNetworkErrors;
-  (window as any).testErrorMessageExtraction = testErrorMessageExtraction;
-  (window as any).runAllTrackEventTests = runAllTests;
+  (window as unknown as {
+    testTrackEventErrorHandling: () => Promise<void>;
+    testNormalTrackEvent: () => Promise<void>;
+    testNetworkErrors: () => Promise<void>;
+    testErrorMessageExtraction: () => void;
+    runAllTrackEventTests: () => Promise<void>;
+  }).testTrackEventErrorHandling = testTrackEventErrorHandling;
+  (window as unknown as {
+    testTrackEventErrorHandling: () => Promise<void>;
+    testNormalTrackEvent: () => Promise<void>;
+    testNetworkErrors: () => Promise<void>;
+    testErrorMessageExtraction: () => void;
+    runAllTrackEventTests: () => Promise<void>;
+  }).testNormalTrackEvent = testNormalTrackEvent;
+  (window as unknown as {
+    testTrackEventErrorHandling: () => Promise<void>;
+    testNormalTrackEvent: () => Promise<void>;
+    testNetworkErrors: () => Promise<void>;
+    testErrorMessageExtraction: () => void;
+    runAllTrackEventTests: () => Promise<void>;
+  }).testNetworkErrors = testNetworkErrors;
+  (window as unknown as {
+    testTrackEventErrorHandling: () => Promise<void>;
+    testNormalTrackEvent: () => Promise<void>;
+    testNetworkErrors: () => Promise<void>;
+    testErrorMessageExtraction: () => void;
+    runAllTrackEventTests: () => Promise<void>;
+  }).testErrorMessageExtraction = testErrorMessageExtraction;
+  (window as unknown as {
+    testTrackEventErrorHandling: () => Promise<void>;
+    testNormalTrackEvent: () => Promise<void>;
+    testNetworkErrors: () => Promise<void>;
+    testErrorMessageExtraction: () => void;
+    runAllTrackEventTests: () => Promise<void>;
+  }).runAllTrackEventTests = runAllTests;
 }
 
 console.log(`

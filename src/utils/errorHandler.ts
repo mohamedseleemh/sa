@@ -12,7 +12,7 @@ export interface ErrorContext {
   component?: string;
   action?: string;
   userId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface SerializedError {
@@ -43,7 +43,7 @@ export const serializeError = (error: unknown, context?: ErrorContext): Serializ
 
   // Handle Supabase errors - more comprehensive check
   if (error && typeof error === 'object') {
-    const obj = error as any;
+    const obj = error as Record<string, unknown>;
 
     // Check for Supabase PostgrestError pattern
     if (obj.message || obj.code || obj.details || obj.hint) {
@@ -78,7 +78,7 @@ export const serializeError = (error: unknown, context?: ErrorContext): Serializ
   try {
     // Try to extract any useful properties from the object
     if (error && typeof error === 'object') {
-      const obj = error as any;
+      const obj = error as Record<string, unknown>;
 
       // Try to get common error properties - improved extraction
       let message = '';
@@ -120,7 +120,7 @@ export const serializeError = (error: unknown, context?: ErrorContext): Serializ
       const details = obj.details || obj.detail || obj.hint || obj.info || '';
 
       // Try to get all enumerable properties
-      const properties: Record<string, any> = {};
+      const properties: Record<string, unknown> = {};
       try {
         Object.keys(obj).forEach(key => {
           const value = obj[key];
@@ -233,7 +233,7 @@ export const logWarning = (
  */
 export const logInfo = (
   message: string,
-  data?: any
+  data?: unknown
 ): void => {
   if (env.DEBUG_MODE) {
     console.info(`ℹ️ ${message}`, data);

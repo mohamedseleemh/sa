@@ -224,7 +224,7 @@ export const runFunctionalityTests = (): TestResult[] => {
 // Auto-run tests if in development mode
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   // Make tests available globally for manual testing
-  (window as any).runFunctionalityTests = runFunctionalityTests;
+  (window as unknown as { runFunctionalityTests: () => TestResult[] }).runFunctionalityTests = runFunctionalityTests;
   
   console.log('🧪 Functionality tests available. Run: runFunctionalityTests()');
 }

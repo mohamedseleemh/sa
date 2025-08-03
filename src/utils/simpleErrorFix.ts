@@ -7,7 +7,7 @@
 const originalConsoleError = console.error;
 
 // Override console.error to fix [object Object] issues
-console.error = (...args: any[]) => {
+console.error = (...args: unknown[]) => {
   const fixedArgs = args.map(arg => {
     // Check if argument shows as [object Object]
     if (typeof arg === 'object' && arg !== null && String(arg) === '[object Object]') {

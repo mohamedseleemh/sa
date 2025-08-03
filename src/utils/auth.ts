@@ -103,7 +103,7 @@ export const validatePasswordStrength = (password: string): {
   }
 
   // Special character check
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     issues.push('يجب أن تحتوي على رمز خاص واحد على الأقل');
   } else {
     score += 20;
@@ -151,6 +151,7 @@ export const validateSession = (token: string): { isValid: boolean; userId?: str
     
     return { isValid: true, userId: sessionData.userId };
   } catch (error) {
+    console.error('Error validating session:', error);
     return { isValid: false };
   }
 };

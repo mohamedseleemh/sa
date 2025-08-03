@@ -23,9 +23,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<any>(null);
+  const [passwordStrength, setPasswordStrength] = useState<{ score: number; issues: string[]; isValid: boolean; } | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
-  const [rateLimitInfo, setRateLimitInfo] = useState<any>(null);
+  const [rateLimitInfo, setRateLimitInfo] = useState<{ allowed: boolean; remainingAttempts: number; resetTime: number | null; } | null>(null);
 
   useEffect(() => {
     // Check if this is first time setup
@@ -243,7 +243,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                   
                   {passwordStrength.issues.length > 0 && (
                     <div className="text-sm text-red-600 space-y-1">
-                      {passwordStrength.issues.map((issue, index) => (
+                  {passwordStrength.issues.map((issue: string, index: number) => (
                         <div key={index} className="flex items-center space-x-reverse space-x-2">
                           <AlertTriangle className="h-3 w-3" />
                           <span>{issue}</span>
@@ -374,7 +374,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                   
                   {passwordStrength.issues.length > 0 && (
                     <div className="text-sm text-red-600 space-y-1">
-                      {passwordStrength.issues.map((issue, index) => (
+                  {passwordStrength.issues.map((issue: string, index: number) => (
                         <div key={index} className="flex items-center space-x-reverse space-x-2">
                           <AlertTriangle className="h-3 w-3" />
                           <span>{issue}</span>

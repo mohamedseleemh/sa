@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useDrag } from 'react-dnd';
 import { PageElement, PageTheme } from './PageBuilder';
 import { Move, MoreVertical } from 'lucide-react';
@@ -24,19 +24,9 @@ const DraggableElement: React.FC<DraggableElementProps> = ({
   onContextMenu
 }) => {
   const elementRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
-
-  const [{ opacity }, drag, dragPreview] = useDrag(() => ({
+  const { isDragging } = useDrag(() => ({
     type: 'element',
-    item: () => {
-      setIsDragging(true);
-      return { id: element.id, type: 'element' };
-    },
-    end: () => {
-      setIsDragging(false);
-    },
+    item: { id: element.id, type: 'element' },
     collect: (monitor) => ({
       opacity: monitor.isDragging() ? 0.5 : 1
     })
@@ -87,8 +77,8 @@ const DraggableElement: React.FC<DraggableElementProps> = ({
       const deltaX = moveEvent.clientX - startX;
       const deltaY = moveEvent.clientY - startY;
 
-      let newSize = { ...startSize };
-      let newPosition = { ...startPosition };
+      const newSize = { ...startSize };
+      const newPosition = { ...startPosition };
 
       switch (handle) {
         case 'se': // Southeast
